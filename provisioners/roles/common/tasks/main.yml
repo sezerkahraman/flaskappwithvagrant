@@ -1,0 +1,23 @@
+---
+
+#bash,openssl,libsll paketlerini yüklüyoruz
+- name: bash,openssl,libsll install the latest version
+  apt:
+    name:
+      - bash
+      - openssl
+      - libssl-dev
+      - libssl-doc
+    update_cache: yes #işlemden önce belliği günceller
+    state: latest     # son versiyonlarının kurulumunu sağlar
+
+- name: install common server packages
+  apt:
+    name:
+      - build-essential
+      - htop
+      - vim
+      - git
+      - unzip
+      - curl
+    state: present #mevcutmu kontrol et mevcut değilse paketleri yükle

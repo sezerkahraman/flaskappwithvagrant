@@ -1,0 +1,13 @@
+# vars dosyası altında kullancağımız değişkenlerin tanımını yaparız
+
+#proje_ismi
+project_name: flask-app
+
+#proje için home dizini
+home_path: /{{user_name}}
+
+#projenin sistemi kurulacağı path bilgisi
+project_path: "{{home_path}}/{{project_name}}"
+
+#flask uygulamamızın bulunacağı path bilgisi
+application_path: "{{project_path}}"

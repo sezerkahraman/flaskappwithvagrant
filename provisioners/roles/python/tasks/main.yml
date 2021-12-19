@@ -1,0 +1,32 @@
+---
+
+
+- name: Install python packages
+  apt:
+    name:
+      - python3-dev
+      - python3-pip
+      - python3-pycurl
+#Sistemimize sanal çalışma ortamı kuruyoruz
+- name: Install virtualenv
+  pip:
+    executable: pip3 #bu komut ile pip'in hangi versiyonda olduğunu belirtiyoruz
+    name: virtualenv
+
+- name: Create the virtualenv
+  command: virtualenv {{ virtualenv_path }} creates={{ virtualenv_path }}/bin/activate
+  become: no
+  
+  
+- name: Install packages from requirements.txt inside virtualenv
+  pip:
+    requirements: "{{requirements_file}}" #gereksinimlerin olduğu dosyanın pathini belirttik
+    virtualenv: "{{virtualenv_path}}" #gereksinimleri yüklemek için virtaulenv pathini belirttik
+
+- name: To activate the virtualenv when we enter the system
+  lineinfile:
+    path: ~/.bashrc #değiştirilecek dosyayı belirttik
+    line: '. "{{virtualenv_path}}/bin/activate" #dosyaya eklenecek/değiştirilecek satırı belirttik
+
+    
+

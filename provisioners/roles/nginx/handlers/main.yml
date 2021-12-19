@@ -1,0 +1,12 @@
+#burada genelde servislerin durumlarını kontrol edebileceğimiz değişkenler saklanır
+---
+
+- name: Reload Nginx
+  service:
+    name: Nginx
+    state: reload #nginx servisini yeniden yüklemek istediğimiz zaman kullanırız.
+
+- name: Stop Nginx
+  service:
+    name: Nginx
+    state: stopped #eğer nginx servisi başlatıldıysa durdurmak için kullanırız.

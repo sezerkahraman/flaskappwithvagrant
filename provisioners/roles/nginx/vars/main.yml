@@ -1,0 +1,6 @@
+---
+# #nginx için sunucu adı
+# nginx default configuration
+nginx_enabled: false
+nginx_use_ssl: false
+hostname: "localhost"

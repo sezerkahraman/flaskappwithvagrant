@@ -1,0 +1,53 @@
+---
+
+- name: Install Nginx
+  apt:
+   name:
+     - nginx
+   state: present
+
+- name: Create the Nginx configuration file for SSL # SSL için nginx yapılandırma dosyasını oluşturuyoruz
+  template:
+    src: ../templates/site_ssl.conf.j2 #dosya yolunun path bilgisini belirtiriz.
+    dest: /etc/nginx/sites-available/{{project_name}} #sanal makinada dosyanı nereye oluşturmak istediğimizi belirtiriz.
+  when: 
+    - use_ssl  #modülün ne zaman/hangi durumda kullanılacağını belirtiyoruz.
+
+- name: Create the Nginx configuration file (non-ssl)
+  template:
+    src: ../templates/site_ssl.conf.j2
+    dest: /etc/nginx/sites-available/{{project_name}}
+  when:
+    - not use_ssl
+
+- name: the default site is removed
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent #böyle bir dosya varsa silme işlemini gerçekleştirir.
+
+- name: Ensure that the application site is /etc/nginx/sites-enabled/default # Uygulamanın etkinleştirildiğinden emin olmamızı sağlar
+  file:
+    src: /etc/nginx/sites-available/{{ project_name }}
+    dest: /etc/nginx/sites-enabled/{{ project_name }}
+    state: link #sembolik link oluşturur
+  notify:
+    - Reload Nginx #nginx servisini tekrar yükler
+
+- name: Ensure nginx service is started and service on restart # nginx servisinin yeniden başlamasını sağlar
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
+  when:
+   - enabled #enabled true ise bu görevi gerçekleştirir
+
+- name: Stop nginx for local developlement and disable service #local sunucu için hizmeti durdurur ve servisi devre dışı bırakır
+  service:
+    name: nginx
+    state: stopped
+    enabled: no
+  notify:
+    - Stop Nginx
+  when:
+    - not enabled
+

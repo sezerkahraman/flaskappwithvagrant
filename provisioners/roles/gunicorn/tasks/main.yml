@@ -1,0 +1,51 @@
+---
+
+- name: Install Supervisor
+  apt:
+    name:
+      - supervisor
+    state: present
+
+- name: Create the gunicorn config directory #Gunicorn config dosyası oluşturuyoruz
+  file:
+    path: /etc/gunicorn #dosyanın oluşturulacağı path bilgisi
+    state: directory    #dizin oluşturacağımızı söylüyoruz
+    owner: "{{user_name}}" #dosyanın sahibini belirtiyoruz
+    group: "{{group_name}}" #dosyanın hangi gruba dahil olacağını belirtiyoruz
+    mode: 700 #dosyanın (read,write,execute) izinlerini belirtiyoruz
+
+- name: Create the gunicorn config file in /etc/gunicorn
+  template:
+    src: ../templates/gunicorn.conf.j2
+    dest: /etc/gunicorn/gunicorn.conf
+
+- name: Create the Gunicorn log directory
+  file:
+    path: /var/log/gunicorn
+    state: directory
+    owner: "{{user_name}}"
+    group: "{{group_name}}"
+    mode: 700
+
+- name: Create the supervisor config file for Gunicorn #gunicorn uygulaması için supervisor config dosyasını oluşturuyoruz
+  template:
+    src: ../templates/supervisor.conf.j2
+    dest: /etc/supervisor/conf.d/gunicorn.conf
+
+- name: Read the supervisor config
+  supervisorctl:
+    name: gunicorn
+    state: present
+
+- name: Start gunicorn with supervisord
+  supervisorctl:
+    name: gunicorn
+    state: restarted
+  when: enabled
+
+- name: Stop gunicorn
+  supervisorctl:
+    name: gunicorn
+    state: stopped
+  when: not enabled
+
